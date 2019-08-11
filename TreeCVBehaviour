@@ -1,0 +1,71 @@
+//Added AMD Dependencies
+
+dojo/query
+dojo/store/Memory
+dojo/_base/window
+dojo/dom
+dojo/_base/connect
+dijit/tree/ObjectStoreModel
+dijit/Tree
+dijit/form/CheckBox
+
+
+//Load Script
+var _this = this;
+_this.CreateTree = function(dataTree){
+    //create test store, adding the getChildren() method required by ObjectStoreModel
+    var myStore = new Memory({
+        data: dataTree,
+        getChildren: function(object){
+            return this.query({parent: object.id});
+        }
+    });
+
+    //create the model
+    var myModel = new ObjectStoreModel({
+        store: myStore,
+        query: {id: 'DB'}
+    });
+
+    //create the tree
+    var tree = new Tree({
+        model: myModel,
+        getIconClass: function(item, opened){
+            console.log('tree getIconClass', item, opened);
+            console.log('tree item type',item.type);
+        },
+        onClick: function(item, node){
+            node._iconClass="dijitFolderClosed",
+            node.iconNode.className = "dijitFolderClosed";
+            console.log(node.domNode.id);
+            var id = node.domNode.id, isNodeSelected = node.checkBox.get('checked');
+            console.log(isNodeSelected);
+
+                dojo.query('#'+id+'.dijitCheckBox').forEach(function(node){
+                    dijit.getEnclosingWidget(node).set('checked', isNodeSelected);
+                });
+        },
+
+        _createTreeNode: function(args){
+            var tnode = new dijit._TreeNode(args);
+            tnode.labelNode.innerHTML = args.label;
+            console.log('Tree created', args);
+            var cb = new dijit.form.CheckBox({id: args.item.id});
+            cb.placeAt(tnode.labelNode, "first");
+            tnode.checkBox = cb;
+            return tnode:
+        }
+    });
+    tree.placeAt(query('.treeDiv', this.context.element)[0]);
+    tree.startup();
+    //tree.expandAll();
+}
+
+
+//View Script
+var _this = this;
+var DBlist = this.context.options.tree.get("value");
+
+_this.CreateTree(DBlist.items);
+
+

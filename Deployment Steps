@@ -1,0 +1,26 @@
+dvlna090-(/cm/crp/dev/dgp/01/util) ./DGP_bpm_extractpackage.sh -f ../ssi/DGP_bpm_dev_application.ssi
+dvlna090-(/opt/vgi/ibm/bpm/v8.5/bin)->./wsadmin.sh -conntype SOAP -port 8880 -lang jython
+AdminTask.BPMCreateOfflinePackage('[-containerAcronym "UDS" -containerSnapshotAcronym "2019072" -containerTrackAcronym "MN17" -serverName "CAT" -skipGovernance false]')
+AdminTask.BPMExtractOfflinePackage('[-containerAcronym UDS -containerSnapshotAcronym 2019072 -containerTrackAcronym MN17 -serverName CAT -outputFile /opt/vgi/ibm/bpmpackage/2019072_CAT_UDS.zip]')
+
+pscp ns0651063@dvlna090.vanguard.com:/opt/vgi/ibm/bpmpackage/2019072_CAT_GMTH.zip C:\IBM\Snapshots
+
+Rename Snapshot
+
+Move to SVN 
+
+Modify and Find SSI
+cd /cm/crp/dev/dgp/01/ssi
+
+TWX_filename="${CM_BASEPATH}/twx/2019061_VMGA.zip"
+
+Get All 4 ssi ready
+pscp uu5o@dvlva152.vanguard.com:/cm/crp/dev/dgp/01/ssi/DGP_bpm_dev2_application.ssi C:\IBM\SSI
+
+Jenkins:
+http://ciserver:19141/job/dgpbpm-twx-1.0.0
+http://ciserver:19141/job/dgpbpm-ssi-1.0.0
+
+EnviroWorks:
+Schedule a Package
+Schedule an Elevation

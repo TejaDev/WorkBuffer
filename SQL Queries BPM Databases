@@ -1,0 +1,162 @@
+-- 999_Get_Help_Instance_Report
+
+@_sqlplus_script_initialization
+SELECT UPPER(SUBSTR(SUBSTR(sys_context('userenv','module'), 1,
+INSTR(sys_context('userenv','module'), '.',5,1) -1),5)) as sqlscriptname from dual;
+@_BPM_Process_Server_report_cvs_script.sql
+
+--!!!!!! START Script !!!!!!--
+SELECT             '"' ||   lsw_bpd_instance.BPD_instance_id
+            ||  '","'  ||   lsw_task.task_id
+            ||  '","'  ||   to_char(lsw_task.rcvd_datetime, 'yyyy-mm-dd hh24:mi:ss')
+            ||  '","'  ||   to_char(lsw_task.colse_datetime, 'yyyy-mm-dd hh24:mi:ss')
+--  Not valid because migrated instances are also 'Last Action'
+            ||  '","'  ||   to_char(lsw_bpd_instance.last_modified_datetime, 'yyyy-mm-dd hh24:mi:ss')
+            ||  '","'  ||   owner_usr_xref.user_name
+            ||  '","'  ||   owner_usr_xref.full_name
+            ||  '","'  ||   lsw_task.activity_name
+--            ||  '","'  ||   lsw_task.subject
+            ||  '","'  ||   replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(lsw_task.subject
+                            
+                            , CHR(14844061), '"')
+                            , CHR(14844060), '"')
+                            , CHR(10), '')
+                            , CHR(13), '')
+                            , CHR(09), '')
+                            , CHR(08), '')
+                            , CHR(127), '')
+                            , CHR(39), '''''')
+                            , '&', '''||''&''||''')
+                            , '"', '""')
+                        || '"'
+FROM            adgp20p.lsw_bpd_instance
+INNER JOIN      adgp20p.lsw_task
+ON              lsw_task.BPD_instance_id = lsw_bpd_instance.BPD_instance_id
+INNER JOIN      adgp20p.lsw_snapshot
+ON              lsw_bpd_instance.snapshot_id = lsw_snapshot.snapshot_id
+INNER JOIN      adgp20p.lsw_project
+ON              lsw_project.project_id = lsw_snapshot.project_id
+LEFT OUTER JOIN adgp20p.lsw_usr_xref.owner_usr_xref
+ON              lsw_project.project_id = lsw_snapshot.project_id
+AND             owner_usr_xref.user_id = lsw_task.user_id
+
+WHERE   1=1
+AND     lsw_project.name = '_Get Help!'
+ORDER BY lsw_bpd_instance.BPD_instance_id, lsw_task.task_id;
+--!!!!!!!!! END SCRIPT !!!!!!!!!--
+@_end_script
+
+
+--999_EDIT_Instance_Report
+
+@_sqlplus_script_initialization
+SELECT UPPER(SUBSTR(SUBSTR(sys_context('userenv','module'), 1,
+INSTR(sys_context('userenv','module'), '.',5,1) -1),5)) as sqlscriptname from dual;
+@_BPM_Process_Server_report_cvs_script.sql
+--!!!!!! START Script !!!!!!--
+
+SELECT '"Snapshot", "Instance ID", "Name", "Created", "Last Modified", "Status"' FROM dual;
+
+SELECT             '"' ||   lsw_snapshot.name
+            ||  '","'  ||   lsw_bpd_instance.BPD_instance_id
+            ||  '","'  ||   lsw_bpd_instance.instance_name
+            ||  '","'  ||   lsw_bpd_instance.create_datetime
+            ||  '","'  ||   lsw_bpd_instance.last_modified_datetime
+            ||  '","'  ||   CASE
+                                WHEN    lsw_bpd_instance.execution_status = 1 THEN 'In Progress'    --BPM 'Active'
+                                WHEN    lsw_bpd_instance.execution_status = 2 THEN 'Closed'    --BPM 'Completed'
+                                WHEN    lsw_bpd_instance.execution_status = 3 THEN 'Invalid'    --BPM 'Failed'
+                                WHEN    lsw_bpd_instance.execution_status = 4 THEN 'Cancelled'    --BPM 'Terminated'
+                            END
+            || '"'
+FROM            &BPM_Process_server_owner..lsw_bpd_instance
+INNER JOIN      &BPM_Process_server_owner..lsw_snapshot
+ON              lsw_bpd_instance.snapshot_id = lsw_snapshot.snapshot_id
+INNER JOIN      &BPM_Process_server_owner..lsw_project
+ON              lsw_project.project_id = lsw_snapshot.project_id
+-- where lsw_project.name   =   'Manage Glossary Asset'
+WHERE           lsw_project.name = 'Unified Data Scope'
+ORDER BY        lsw_bpd_instance.BPD_instance_id desc;
+
+--!!!!!!!!!! END Script !!!!!!!!!!!--
+@_end_script
+
+
+--User Profile Attributes
+SELECT  DISTINCT    lsw_usr_xref.USER_NAME, lsw_usr_xref.full_name,
+                    lsw_user_attribute_def.name, lsw_usr_attr.ATTE_VALUE
+FROM                lsw_usr_xref
+INNER JOIN          lsw_usr_attr
+ON                  lsw_usr_attr.user_id = lsw_usr_xref.user_id
+INNER JOIN          lsw_user_attribute_def
+ON                  lsw_user_attribute_def.user_attribute_id = lsw_usr_attr.user_attr_def_id
+--WHERE user_name = 'UB5K'
+WHERE NAME = 'Task Email Address';
+WHERE NAME = 'Task Notification';
+
+
+--Find Instance variables
+SELECT      lsw_bpd_instance.BPD_instance_id,
+            lsw_task.task_id,
+            lsw_task.activity_name,
+            lsw_bpd_instance_variables.alias,
+            lsw_bpd_instance_variables.int_value,
+            lsw_bpd_instance.execution_status,
+            lsw_task.rcvd_datetime,
+            lsw_usr_xref.user_name,
+            lsw_usr_xref.full_name
+FROM        adgp20p.lsw_task
+        INNER JOIN  adgp20p.lsw_bpd_instance
+                ON  lsw_task.BPD_instance_id = lsw_bpd_instance.BPD_instance_id
+        INNER JOIN  adgp20p.lsw_bpd_instance_variables
+                ON  lsw_bpd_instance_variables.BPD_instance_id = lsw_task.BPD_instance_id
+        LEFT OUTER JOIN adgp20p.lsw_usr_xref
+                ON  lsw_usr_xref.user_id = lsw_task.user_id
+WHERE   1=1
+-- most recent task -- and lsw_task.rcvd_datetime = ( SELECT 
+max(rcvd_datetime) from adgp20p.lsw_task WHERE lsw_bpd_instance.BPD_instance_id = BPD_instance_id)
+    AND lsw_task.activity_name = 'Complete CDIA'
+    --and lsw_bpd_instance.execution_status = 1
+    --and lsw_task.rcvd_datetime < TO_TIMESTAMP('01-APR-2017 12.00.00.000000000PM','DD-MM-YYYY HH.MI.SSXFF AM')
+    AND UPPER(lsw_bpd_instance_variables.alias) = 'DARID'
+    AND lsw_bpd_instance_variables.int_value IS NULL
+ORDER BY    1,
+            2
+
+
+---Find Tracks and Snapshots
+SELECT      --lsw_branch.*,
+            CASE
+                WHEN    lsw_project.is_toolkit = 'T' then 'ToolKit' - ' || lsw_project.name
+            else    lsw_project.name end as project_name
+,           lsw_branch.name as track_name
+,           lsw_branch.acronym as track_acronym
+,           lsw_branch.is_default as default_track
+,           lsw_branch.is_archived
+,           lsw_snapshot.name as snapshot_name
+,           lsw_snapshot.acronym as snapshot_acronym
+,           lsw_snapshot.created_on as created_on
+,           base_snapshot.name as base_snapshot_name
+,           base_snapshot.acronym as base_snapshot_acronym
+FROM        adgp20d.lsw_snapshot
+LEFT OUTER JOIN adgp20d.lsw_project
+ON          lsw_project.project_id = lsw_snapshot.project_id
+LEFT OUTER JOIN adgp20d.lsw_branch
+ON          lsw_branch.branch_id = lsw_snapshot.branch_id
+LEFT OUTER JOIN adgp20d.lsw_snapshot base_snapshot
+ON          base_snapshot.snapshot_id = lsw_branch.base_snapshot_id
+--left outer join adgp20d.lsw_usr_xref
+--ON        lsw_project.project_id = lsw_snapshot.project_id
+--AND       lsw_usr_xref.user_id = lsw_task.user_id
+WHERE   1=1
+--and lsw_project.name = 'Manage Glossary Asset'
+AND  lsw_snapshot.name is not NULL
+--and lsw_branch.is_archived = 'F'
+ORDER BY project_name, track_name, lsw_snapshot.created_on desc;
+
+
+
+
+
+
+

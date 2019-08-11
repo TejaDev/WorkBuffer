@@ -1,0 +1,9 @@
+Steps:
+----------------------- 
+1. Create a Snapshot 
+2. Go to Process Inspector
+3. Select the source Snapshot where you want the Instance to originate and navigate to the point where you would like to test the migration.
+4. Go to Execution Evaluator
+    var Snapshot = tw.system.currentProcess.processApp.findSnapshotByName('test1');
+    tw.system.findProcessInstanceByID(60809).migrateTo(snapshot);
+5. You can test migrate the instances.

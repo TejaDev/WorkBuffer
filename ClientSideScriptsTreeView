@@ -1,0 +1,60 @@
+
+// Client Script 1
+function create(index){
+    var db = {};
+    db.name = "DB1";
+    for(var i = 0; i<index; i++){
+        db.schema = [];
+        for(var j = 0; j < index; j++){
+            db.schema[j] = {};
+            db.schema[j].name = "Sai";
+            db.schema[j].table = [];
+            for(var k = 0; k < index; k++){
+                db.schema[j].table[k] = {};
+                db.schema[j].table[k].name = "TB1";
+                db.schema[j].table[k].column = [];
+                for(var m = 0; m<index; m++){
+                    db.schema[j].table[k].column[m] = {};
+                    db.schema[j].table[k].column[m].name = "CL1";
+                }
+            }
+        }
+    }
+    return db;
+}
+
+// Client Script 2
+var obj = [];
+obj[0] = {};
+obj[0].id = 'DB';
+obj[0].name = 'DB';
+obj[0].value = 'DB';
+obj[0].parent = "";
+
+fuction updateTree(id, name, value, parent){
+    var obj = {};
+    obj.id = id;
+    obj.name = name;
+    obj.value = value;
+    obj.parent = parent;
+    return obj;
+}
+
+var k = 1;
+for(var i = 0; i < tw.local.database.schema.length; i++){
+    var schema = tw.local.database.schema[i];
+    var schemaId = 'schemaName'+i;
+    obj[k++] = updateTree(schemaId,schema.name,schema.name, 'DB');
+    for(var j = 0; j < schema.table.length; j++){
+        var table = schema.table[j];
+        var tableId = schemaId+'tableName'+j;
+        obj[k++] = updateTree(tableId, table.name, table.name, schemaId);
+        for(var t = 0; t<table.column.length; t++){
+            var col = table.column[t];
+            var colId = tableId+'col'+t;
+            obj[k++] = updateTree(colId,col.name,col.name,tableId);
+        }
+    }
+}
+tw.local.tree = obj;
+

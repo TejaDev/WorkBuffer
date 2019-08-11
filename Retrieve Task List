@@ -1,0 +1,27 @@
+var _debug(){};
+
+var _debug = log.info;
+
+tw.local.taskListProperties = new tw.object.TaskListProperties();
+tw.local.taskListProperties.searchFilter = tw.local.taskSearchCriteria;
+
+if(tw.local.taskListProperties == null){
+    tw.local.taskListProperties = new tw.object.TaskListProperties();
+}
+tw.local.taskListData = tw.system.retrieveTaskList(tw.local.taskListProperties, tw.local.maxRows, tw.local.beginIndex);
+
+
+Determine Team Assignment by team and role
+------------------------------------------
+var team;
+
+    if(tw.local.igcDomain == String(tw.epv.IGCDomainNames.corporateFinancialServicesDomain)){
+        team = tw.system.org.team["Corporate Financial Services Domain Manager"];
+    }
+    else if (tw.local.igcDomain == String(tw.epv.IGCDomainNames.informationTechnologyDomain)){
+        team = tw.system.org.team["Information Technology Domain Manager"];
+    }
+
+    if (team && team.allUsers && team.allUsers.length>0){
+        tw.local.teamName = team.name;
+    }

@@ -1,0 +1,18 @@
+/* House Keeping Deletion of Process Instances */
+// Process Center
+Scenario 1: 
+Process Designer can be utilized to delete the process Instances
+
+Senario 2: 
+Process Inspector from the Admin Console can be utilized to Delete Process Instances
+
+Senario 3: 
+Using WSAdmin commands to delete process Instances
+
+
+// Process Server
+Scenario 1: 
+Process Inspector from the Admin Console can be utilized to Delete Process Instances
+
+Scenario 2: 
+WSAdmin Commands to delete Process Instances

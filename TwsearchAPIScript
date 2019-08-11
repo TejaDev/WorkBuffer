@@ -1,0 +1,52 @@
+// Get all instance Data
+
+var procesInstanceColumn = new TWSearchColumn();
+procesInstanceColumn.type = TWSearchColumn.Types.ProcessInstance;
+procesInstanceColumn.name = TWSearchColumn.procesInstanceColumns.name;
+
+var processInstanceIdColumn = new TWSearchColumn();
+processInstanceIdColumn.type = TWSearchColumn.Types.ProcessInstance;
+processInstanceIdColumn.name = TWSearchColumn..ProcessInstanceColumns.ID;
+
+var processInstanceStatusColumn = new TWSearchColumn();
+processInstanceStatusColumn.type = TWSearchColumn.Types.ProcessInstance;
+processInstanceStatusColumn.name = TWSearchColumn.ProcessInstanceColumns.Status;
+
+var processInstanceDateColumn = new TWSearchColumn();
+processInstanceDateColumn.type = TWSearchColumn.Types.ProcessInstance;
+processInstanceDateColumn.name = TWSearchColumn.ProcessInstanceColumns.DueDate;
+
+var darIDColumn = new TWSearchColumn();
+darIDColumn.type = TWSearchColumn.Types.BusinessData;
+darIDColumn.name = "darId";
+
+var processInstanceStatusCondition = new TWSearchCondition();
+processInstanceStatusCondition.column = processInstanceStatusColumn;
+processInstanceStatusCondition.operator = TWSearchCondition.Operations.Equals;
+processInstanceStatusCondition.value = TWProcessInstance.Statuses.Active;
+
+var darIDCondition = new TWSearchCondition();
+darIDCondition.column = darIDColumn;
+darIDCondition.operator = TWSearchCondition.Operations.Equals;
+darIDCondition.value = tw.local.darId;
+
+var processIdCondition = new TWSearch();
+
+search.columns = new Array(processInstanceIdColumn,darIDColumn,processInstanceStatusColumn);
+search.organizedBy = TWSearch.organizeByTypes.ProcessInstance;
+
+var result = search.execute();
+tw.local.processInstanceIds = new tw.object.listOf.String();
+tw.local.instancesDetails = new tw.object.listOf.NameValueCode();
+
+for(var i = 0; i < result.rows.length; i++){
+    var row = result.rows[i];
+    if(rows.values[0]){
+        tw.local.processInstanceIds.insertIntoList(tw.local.processInstanceIds.listLength, row.values[0].toString());
+        var instanceDetails = new tw.object.NameValueCode();
+        instanceDetails.name = row.values[0].toString();
+        if(row.values[]) instanceDetails.value = row.values[1].toString();
+        if(row.values[]) instanceDetails.code = row.values[2].toString();
+        tw.local.instanceDetails.insertIntoList(tw.local.instanceDetails.listLength, instanceDetails);
+    }
+}

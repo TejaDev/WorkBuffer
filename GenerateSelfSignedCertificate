@@ -1,0 +1,16 @@
+Steps to generate Certificate (CSR)
+
+Execute the command "openssl req -x509 -newkey rsa:2048 -keyout CertificateName.pem -out CertificateName.pem -days 3650"
+Enter PEM Passphrase: password(This is the Private key password)
+Country NAme: US
+State or Province Name: PA
+Locality Name: Malvern
+Organization Name: orgName(This is for what organization we are creating that certificate for)
+Organization Unit Name: (This is basically a domain/team name)
+Common Name: vanguarddev.appiancloud.com(to the address we are creating certificate should be mentioned here)
+Email address: sai_manam@vanguard.com
+
+executing the above command will generate a .pem file in the current directory
+
+Execute the following command to generate a .cer file
+openssl x509 -inform PEM -in CertificateName.pem -outform DER -out CertificateName.cer
