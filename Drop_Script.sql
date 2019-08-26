@@ -1,0 +1,10 @@
+# Dropping Tables
+DROP TABLE tblPlayOffRound;
+DROP TABLE tblHockeyGame;
+DROP TABLE tblHockeyTeam;
+DROP TABLE tblGameScores;
+DROP TABLE tblHockeyTeamPlayer;
+DROP TABLE tblUser;
+DROP TABLE tblUserInfo;
+DROP TABLE tblUserScorePicks;
+DROP TABLE tblUserStatsPicks;

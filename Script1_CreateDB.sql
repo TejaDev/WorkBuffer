@@ -1,0 +1,86 @@
+# Creating Tables
+CREATE TABLE IF NOT EXISTS tblPlayOffRound(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+team1Id INT NOT NULL,
+team2Id INT NOT NULL,
+startTime DATETIME,
+endTime DATETIME,
+roundNum varchar(100)
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblHockeyGame(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+roundId INT,
+startTime DATETIME,
+description varchar(255),
+team1Id INT NOT NULL,
+team2Id INT NOT NULL
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblHockeyTeam(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(255),
+logo blob
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblGameScores(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+team1Score SMALLINT,
+team2Score SMALLINT
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblHockeyTeamPlayer(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+hockeyTeamId INT NOT NULL,
+firstName VARCHAR(255),
+lastName VARCHAR(255),
+jerseyName VARCHAR(255),
+position VARCHAR(100)
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblUser(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+userName VARCHAR(50) NOT NULL,
+password VARCHAR(20) NOT NULL 
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblUserInfo(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+firstName VARCHAR(100),
+lastName VARCHAR(100),
+email VARCHAR(50),
+round1Points INT,
+round2Points INT,
+round3Points INT,
+round4Points INT
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblUserScorePicks(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+hockeyGameId INT,
+game1Score INT,
+game2Score INT,
+userId varchar(80)
+) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tblUserStatsPicks(
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+roundId INT,
+goalLeaderId INT,
+assistLeaderId INT,
+penaltyLeaderId INT, 
+plusMinusLeaderId INT,
+faceOffsWonLeaderId INT,
+sogLeaderId INT,
+numShutOuts SMALLINT,
+userId varchar(80)
+) ENGINE=INNODB;
+
+# Creating Relationships
+
+
+
+
+
+
+
