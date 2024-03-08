@@ -1,0 +1,23 @@
+@echo off
+setlocal enabledelayedexpansion
+
+set "targetTime=00:00"
+set "currentTime="
+
+:loop
+REM Get the current time
+for /f "tokens=1-2 delims=:" %%a in ('time ^| find ":"') do (
+    set "currentTime=%%a:%%b"
+)
+
+REM Compare the current time with the target time
+if "!currentTime!" lss "%targetTime%" (
+    echo Current time: !currentTime! - Waiting until %targetTime%
+    timeout /nobreak /t 60 >nul
+    goto :loop
+) else (
+    echo Specified time reached. Exiting...
+)
+
+:end
+endlocal
