@@ -1,0 +1,60 @@
+SQL query to list the blocking sessions and the sessions they are blocking:
+
+SELECT
+    blocker.SID AS blocker_sid,
+    blocker.SERIAL# AS blocker_serial,
+    blocker.USERNAME AS blocker_user,
+    blocker.MACHINE AS blocker_machine,
+    blocker.PROGRAM AS blocker_program,
+    blocker.STATUS AS blocker_status,
+    blocker.EVENT AS blocker_event,
+    blocker.WAIT_TIME AS blocker_wait_time,
+    blocked.SID AS blocked_sid,
+    blocked.SERIAL# AS blocked_serial,
+    blocked.USERNAME AS blocked_user,
+    blocked.MACHINE AS blocked_machine,
+    blocked.PROGRAM AS blocked_program,
+    blocked.STATUS AS blocked_status,
+    blocked.EVENT AS blocked_event,
+    blocked.WAIT_TIME AS blocked_wait_time
+FROM
+    V$SESSION blocker
+JOIN
+    V$SESSION blocked
+ON
+    blocker.SID = blocked.BLOCKING_SESSION
+WHERE
+    blocker.BLOCKING_SESSION IS NOT NULL
+ORDER BY
+    blocker.SID, blocked.SID;
+
+
+Query to list sessions with queries that have been running for a long time
+SELECT
+    s.SID,
+    s.SERIAL#,
+    s.USERNAME,
+    s.MACHINE,
+    s.PROGRAM,
+    s.STATUS,
+    s.SCHEMA#,
+    s.SQL_ID,
+    s.SQL_CHILD_NUMBER,
+    s.SQL_ADDRESS,
+    s.EVENT,
+    s.WAIT_TIME,
+    s.LAST_CALL_ET AS elapsed_time_seconds,
+    q.SQL_TEXT
+FROM
+    V$SESSION s
+JOIN
+    V$SQL q
+ON
+    s.SQL_ID = q.SQL_ID
+WHERE
+    s.STATUS = 'ACTIVE'
+    AND s.LAST_CALL_ET > 60  -- Adjust this threshold as needed (e.g., queries running longer than 60 seconds)
+ORDER BY
+    s.LAST_CALL_ET DESC;
+
+
